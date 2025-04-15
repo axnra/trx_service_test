@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "trx-service-test"
+version = "0.1.0"
+description = "Tron wallet info service"
+authors = ["Evgeniy <axnra@bk.ru>"]
+readme = "README.md"
+packages = [{ include = "app" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.12"
+sqlalchemy = "^2.0.40"
+uvicorn = "^0.34.1"
+tronpy = "^0.5.0"
+python-dotenv = "^1.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+pytest-asyncio = "^0.26.0"
+httpx = "^0.28.1"
+aiosqlite = "^0.21.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
