@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
@@ -59,8 +59,8 @@ async def _handle_error(
 
 @router.get("/records", response_model=List[WalletDB])
 async def list_wallet_records(
-    limit: int = 10,
-    offset: int = 0,
+    limit: int = Query(10, ge=0),
+    offset: int = Query(0, ge=0),
     session: AsyncSession = Depends(get_session)
 ):
     """
