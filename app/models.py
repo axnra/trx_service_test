@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, BigInteger, DateTime, Boolean
+from sqlalchemy import Column, String, Integer, BigInteger, DateTime, Boolean, Index
 from datetime import datetime, timezone
 from app.db import Base
 
@@ -19,3 +19,7 @@ class WalletRequest(Base):
     error_message = Column(String, nullable=True)
 
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
+
+    __table_args__ = (
+        Index("ix_wallet_requests_created_at", "created_at"),
+    )
