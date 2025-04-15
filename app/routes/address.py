@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from app.schemas import WalletIn, WalletDB, WalletOut
-from app.db import get_session
+from app.deps import get_session
 from app.tron import TronClient
 from app.crud import create_wallet_record, get_wallet_records
 from app.deps import get_tron_client

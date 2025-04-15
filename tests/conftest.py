@@ -5,7 +5,7 @@ from sqlalchemy.pool import NullPool
 from httpx import AsyncClient, ASGITransport
 
 from app.main import app
-from app.db import get_session
+from app.deps import get_session
 from app.models import Base
 
 
