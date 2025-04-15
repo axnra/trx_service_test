@@ -6,15 +6,21 @@ from app.schemas import WalletIn, WalletDB, WalletOut
 from app.db import get_session
 from app.tron import TronClient
 from app.crud import create_wallet_record, get_wallet_records
+from app.deps import get_tron_client
+from app.logger import logger
+router = APIRouter(tags=["Wallet API"])
 
-router = APIRouter()
-tron = TronClient()
 
-
-@router.post("/address", response_model=WalletDB)
+@router.post("/address", response_model=WalletDB, responses={
+        200: {"description": "Successful response"},
+        400: {"description": "Invalid wallet address"},
+        503: {"description": "Tron API unavailable"},
+        500: {"description": "Internal server error"},
+    })
 async def fetch_wallet_info(
     payload: WalletIn,
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+    tron: TronClient = Depends(get_tron_client)
 ):
     """
     Fetch wallet info by address and store the result in the database.
@@ -24,8 +30,10 @@ async def fetch_wallet_info(
     503 if external API is unavailable,
     500 for unexpected server errors.
     """
+    logger.info(f"→ Request to /address: {payload.wallet_address}")
+
     try:
-        data = tron.get_wallet_info(payload.wallet_address)
+        data = await tron.get_wallet_info(payload.wallet_address)
         wallet_out = WalletOut(**data)
         return await create_wallet_record(session, wallet_out)
 
@@ -45,6 +53,8 @@ async def _handle_error(
     error_message: str,
     status_code: int
 ):
+    logger.error(f"[{status_code}] Error for {wallet_address}: {error_message}")
+
     fake = WalletOut(
         wallet_address=wallet_address,
         balance=0,
@@ -57,7 +67,10 @@ async def _handle_error(
     raise HTTPException(status_code=status_code, detail=error_message)
 
 
-@router.get("/records", response_model=List[WalletDB])
+@router.get("/records", response_model=List[WalletDB], responses={
+    200: {"description": "Successful Response"},
+    422: {"description": "Validation Error"}
+})
 async def list_wallet_records(
     limit: int = Query(10, ge=0),
     offset: int = Query(0, ge=0),

@@ -180,3 +180,7 @@ cython_debug/
 /.idea/vcs.xml
 /.idea/workspace.xml
 /.idea/.gitignore
+/.idea/dataSources/2da3ad1b-f25a-443c-91f1-2983f2ed7b51.xml
+/.idea/dataSources.xml
+/.idea/dataSources/2da3ad1b-f25a-443c-91f1-2983f2ed7b51/storage_v2/_src_/schema/main.uQUzAA.meta
+/.idea/dataSources.local.xml

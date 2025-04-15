@@ -1,27 +1,34 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator, Field
 from datetime import datetime
 from typing import Optional
+from tronpy.keys import is_base58check_address
 
 
 class WalletIn(BaseModel):
     """Schema for incoming wallet address in POST request."""
-    wallet_address: str
+    wallet_address: str = Field(..., min_length=1)
 
     model_config = {
+        "strict": True,
         "json_schema_extra": {
-            "examples": [
-                {"wallet_address": "TXYZ1234567890"}
-            ]
+            "examples": [{"wallet_address": "TXYZ1234567890"}]
         }
     }
+
+    @classmethod
+    @field_validator("wallet_address")
+    def validate_address(cls, v: str) -> str:
+        if not is_base58check_address(v):
+            raise ValueError("Invalid Tron address format")
+        return v
 
 
 class WalletOut(BaseModel):
     """Schema representing wallet data fetched from Tron network."""
     wallet_address: str
-    balance: int
-    energy: int
-    bandwidth: int
+    balance: Optional[int]
+    energy: Optional[int]
+    bandwidth: Optional[int]
 
 
 class WalletDB(WalletOut):

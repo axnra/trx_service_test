@@ -1,3 +1,4 @@
+import asyncio
 from tronpy import Tron
 from tronpy.exceptions import AddressNotFound
 from tronpy.keys import is_base58check_address
@@ -10,9 +11,9 @@ class TronClient:
     def __init__(self):
         self.client = Tron()
 
-    def get_wallet_info(self, address: str) -> dict:
+    async def get_wallet_info(self, address: str) -> dict:
         """
-        Retrieve balance, energy, and bandwidth for a TRON wallet address.
+        Asynchronously retrieve balance, energy, and bandwidth for a TRON wallet address.
 
         Args:
             address (str): TRON wallet address in Base58Check format.
@@ -27,9 +28,11 @@ class TronClient:
         if not is_base58check_address(address):
             raise ValueError("Invalid Tron address format")
 
+        loop = asyncio.get_running_loop()
+
         try:
-            acc = self.client.get_account(address)
-            resource = self.client.get_account_resource(address)
+            acc = await loop.run_in_executor(None, lambda: self.client.get_account(address))
+            resource = await loop.run_in_executor(None, lambda: self.client.get_account_resource(address))
 
             return {
                 "wallet_address": address,

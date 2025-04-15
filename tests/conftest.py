@@ -1,5 +1,3 @@
-import asyncio
-import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
@@ -46,10 +44,9 @@ async def async_session(engine_and_connection):
 @pytest_asyncio.fixture()
 async def client(async_session):
     """
-    Provides an HTTPX AsyncClient with the session overridden.
+    Provides an HTTPX AsyncClient with overridden dependencies.
 
-    This allows full-stack API testing with the database mocked
-    through dependency injection.
+    Supports overriding get_session and other dependencies via FastAPI's dependency_overrides.
     """
     async def override_get_session():
         yield async_session
@@ -61,3 +58,4 @@ async def client(async_session):
         yield c
 
     app.dependency_overrides.clear()  # type: ignore
+

@@ -5,33 +5,36 @@ from sqlalchemy import select
 
 from app.models import WalletRequest
 from app.schemas import WalletOut
+from app.logger import logger
 
 
 async def create_wallet_record(
     session: AsyncSession,
     data: WalletOut,
     success: bool = True,
-    error_message: str | None = None,
+    error_message: str | None = None
 ) -> WalletRequest:
     """
-    Creates a new wallet record in the database.
+        Creates a new wallet record in the database.
 
-    Args:
-        session (AsyncSession): Database session.
-        data (WalletOut): Parsed wallet data.
-        success (bool, optional): Indicates if the retrieval was successful. Defaults to True.
-        error_message (str | None, optional): Error description if failed. Defaults to None.
+        Args:
+            session (AsyncSession): Database session.
+            data (WalletOut): Parsed wallet data.
+            success (bool, optional): Indicates if the retrieval was successful. Defaults to True.
+            error_message (str | None, optional): Error description if failed. Defaults to None.
 
-    Returns:
-        WalletRequest: The created record.
-    """
+        Returns:
+            WalletRequest: The created record.
+        """
+    logger.info(f"Saving record: {data.wallet_address}, success={success}")
+
     record = WalletRequest(
         wallet_address=data.wallet_address,
         balance=data.balance,
         energy=data.energy,
         bandwidth=data.bandwidth,
         success=success,
-        error_message=error_message,
+        error_message=error_message
     )
     session.add(record)
     await session.commit()
